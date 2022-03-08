@@ -180,3 +180,82 @@ nested route 는 route 안에 있는 또 다른 route 로 탭을 사용할때 �
 ```
 
 onClick event 없이 `Link` 를 사용하여 URL을 변경해준다.
+
+2. 탭 선택을 알아채기
+
+- #useRouteMatch 유저가 어느 탭에 있는지 식별하기
+    useRouteMath를 사용하여 특정 URL에 있는지 여부를 알 수있다.
+
+```JS
+const priceMatch = useRouteMatch("/:coinId/price");
+```
+
+를 사용하면 다음과 같은 정보를 반환 해준다.
+![[Pasted image 20220308213842.png]]
+
+```JS
+<Tab isActive={chartMatch !== null}>
+	<Link to={`/${coinId}/chart`}>Chart</Link>
+</Tab>
+```
+
+useRouteMatch 를 사용하여 위처럼 props 조건처리가 가능하다.
+
+```JS
+const Tab = styled.span<{ isActive: boolean }>`
+```
+
+Tab 의 styled-component는 boolean형의 isActive 프롭을 가지고 isActive 값이 true, false 일때 조건을 처리할 수있다.
+
+---
+
+## React Query
+
+`npm i react-query `
+[리액트 쿼리 공식문서](https://react-query.tanstack.com/quick-start)
+[참고 링크 ](https://www.js2uix.com/frontend/react-query-step1/)
+
+> React 앱에서 비동기 로직을 쉽게 다루게 해주는 라이브러리인 React Query를 사용해보자
+
+### React Query 사용이유?
+
+1.  서버 데이터 캐싱
+2.  데이터 패칭 시 로딩, 에러 처리를 한 곳에서 처리 가능
+3.  prefetching, retry 등 다양한 옵션
+4.  쉬운 상태 관리 가능
+
+### React Query 사용하기
+
+1. query Client 만들기
+   `const queryClient = new QueryClient();`
+
+2. provider 만들기
+
+```JS
+<QueryClientProvider client={queryClient}>
+<App />
+</QueryClientProvider>,
+```
+
+5. fetcher 함수 를 만들어서 데이터를 패칭
+   fetcher 함수는 꼭 fetch promise 를 리턴해줘야 한다.
+
+```JS
+export function fetchCoins() {
+	//json Data 를 리턴 해줘야한다.
+	return fetch("https://api.coinpaprika.com/v1/coins").then((response) =>
+	response.json()
+); }
+```
+
+6. useQuery 를 이용하여 데이터를 불러오기
+
+- useQuery hook 을 사용하여 API 데이터의 만료 시간, 리프레싱 주기, 데이터를 캐시에서 유지할 기간, 브라우저 포커스 시 데이터 리프레시 여부, 성공/에러 콜백 등의 기능을 제어할 수 있다.
+
+```JS
+const { isLoading, data } = useQuery<CoinInterface[]>("allCoins", fetchCoins);
+```
+
+useQuery(쿼리 키, fetcher 함수) 사용하여 isLoading 상태와 위의 fetchCoins에서 리턴한 data 값을 사용하고자 하는 컴포넌트에서 불러와 사용할 수있다.
+
+특이한점은 리프레시하여도 다시 fetch해오지 않는다는 것인데, 이는 데이터를 캐시에 저장하는 react-query의 특징 때문이다.
