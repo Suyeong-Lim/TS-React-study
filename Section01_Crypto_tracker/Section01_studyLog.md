@@ -183,8 +183,8 @@ onClick event 없이 `Link` 를 사용하여 URL을 변경해준다.
 
 2. 탭 선택을 알아채기
 
-- #useRouteMatch 유저가 어느 탭에 있는지 식별하기
-    useRouteMath를 사용하여 특정 URL에 있는지 여부를 알 수있다.
+- #useRouteMatch 훅을 사용하여 유저가 어느 탭에 있는지 식별하기
+- useRouteMath를 사용하여 특정 URL에 있는지 여부를 알 수있다.
 
 ```JS
 const priceMatch = useRouteMatch("/:coinId/price");
@@ -211,9 +211,7 @@ Tab 의 styled-component는 boolean형의 isActive 프롭을 가지고 isActive 
 
 ## React Query
 
-`npm i react-query `
-[리액트 쿼리 공식문서](https://react-query.tanstack.com/quick-start)
-[참고 링크 ](https://www.js2uix.com/frontend/react-query-step1/)
+`npm i react-query ` -[리액트 쿼리 공식문서](https://react-query.tanstack.com/quick-start) -[참고 링크 ](https://www.js2uix.com/frontend/react-query-step1/)
 
 > React 앱에서 비동기 로직을 쉽게 다루게 해주는 라이브러리인 React Query를 사용해보자
 
@@ -227,9 +225,12 @@ Tab 의 styled-component는 boolean형의 isActive 프롭을 가지고 isActive 
 ### React Query 사용하기
 
 1. query Client 만들기
-   `const queryClient = new QueryClient();`
 
-2. provider 만들기
+```JS
+const queryClient = new QueryClient();
+```
+
+3. provider 만들기
 
 ```JS
 <QueryClientProvider client={queryClient}>
@@ -259,3 +260,46 @@ const { isLoading, data } = useQuery<CoinInterface[]>("allCoins", fetchCoins);
 useQuery(쿼리 키, fetcher 함수) 사용하여 isLoading 상태와 위의 fetchCoins에서 리턴한 data 값을 사용하고자 하는 컴포넌트에서 불러와 사용할 수있다.
 
 특이한점은 리프레시하여도 다시 fetch해오지 않는다는 것인데, 이는 데이터를 캐시에 저장하는 react-query의 특징 때문이다.
+
+#### 🤔 만약 두개의 fetch 데이터가 필요할때는 어떻게 react query 를 사용할 수있을까?
+
+```JS
+const { isLoading: infoLoading, data: infoData } = useQuery<InfoData>(
+
+["info", coinId],
+
+() => fetchCoinInfo(coinId)
+
+);
+
+
+const { isLoading: tickerLoading, data: tickerData } = useQuery<PriceData>(
+
+["tickers", coinId],
+
+() => fetchCoinTickers(coinId)
+
+);
+```
+
+위와 같이 object 의 property를 가져온 후 이름을 바꾸는 자바스크립트 문법을 사용하여
+: 기호 뒤에 다시 이름을 지정해줄 수있다. 또한 key 값이 배열로 저장되기때문에 ["info",coinId] 처럼 이름을 지정해줄 수도 있다.
+
+### React Query Dev tools
+
+> React-query Debug 툴 사용법
+
+- ReactQueryDevtools 를 import 해주고
+
+```JS
+import { ReactQueryDevtools } from "react-query/devtools";
+```
+
+App.tsx 에 컴포넌트를 추가해주면
+
+```JS
+<ReactQueryDevtools initialIsOpen={true} />
+```
+
+React-Query Dev tools 를 볼 수있다.
+![React-Query Dev tools](image20220309111831.png)
