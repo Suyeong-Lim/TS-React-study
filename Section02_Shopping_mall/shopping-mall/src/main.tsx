@@ -5,10 +5,8 @@ import { BrowserRouter, useRoutes } from "react-router-dom";
 import "./sass/index.scss";
 
 ReactDOM.render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </React.StrictMode>,
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>,
   document.getElementById("root")
 );
